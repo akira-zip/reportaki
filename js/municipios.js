@@ -1,6 +1,6 @@
 "use strict"
 
-// Municípios de São Paulo em ordem alfabética (busca, cadastro e publicação)
+// Municípios de São Paulo em ordem alfabética
 const MUNICIPIOS = [
     "Adamantina",
     "Adolfo",
