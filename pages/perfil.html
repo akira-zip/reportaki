@@ -1,0 +1,42 @@
+<html lang="pt-br">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Perfil | Reportaki</title>
+        <link rel="stylesheet" href="../css/perfil.css">
+    </head>
+
+    <body data-exige="login">
+        <header class="site-header">
+            <a class="brand" href="home.html">Reportaki</a>
+
+            <nav class="site-nav" aria-label="Navegação principal">
+                <a href="home.html">Início</a>
+
+                <a href="busca.html">Buscar cidade</a>
+
+                <a href="feed.html">Feed</a>
+
+                <a href="perfil.html" aria-current="page">Perfil</a>
+            </nav>
+        </header>
+
+        <div class="userData">
+            <label for="perfilNome">Nome de usuário:</label>
+            
+            <input id="perfilNome" type="text" placeholder="Nome Aleatório" disabled>
+
+            <label for="perfilEmail">Email:</label>
+            
+            <input id="perfilEmail" type="text" placeholder="email.aleatorio@jemail.com" disabled>
+
+            <label for="perfilTipo">Tipo de usuário:</label>
+            
+            <input id="perfilTipo" type="text" placeholder="Cidadão" disabled>
+
+            <button id="btnSair" class="button" type="button">Sair da conta</button>
+        </div>
+
+        <script src="../js/sessao.js" defer></script>
+    </body>
+</html>
