@@ -2,16 +2,8 @@
 
 // Chave do localStorage e nomes exibidos na tela
 const CHAVE_POSTS = "reportaki_posts"
-const NOMES_CATEGORIAS = {
-    lixo: "Lixo",
-    buraco: "Buraco",
-    iluminacao: "Iluminação",
-}
-const NOMES_STATUS = {
-    "nao-iniciado": "Não iniciado",
-    iniciado: "Iniciado",
-    finalizado: "Finalizado",
-}
+const NOMES_CATEGORIAS = {"lixo": "Lixo", "buraco": "Buraco", "iluminacao": "Iluminação"}
+const NOMES_STATUS = {"nao-iniciado": "Não iniciado", "iniciado": "Iniciado", "finalizado": "Finalizado"}
 
 // --- Funções Utilitárias ---
 
@@ -20,7 +12,8 @@ function lerPostsSalvos() {
     try {
         const dados = JSON.parse(localStorage.getItem(CHAVE_POSTS) || "[]")
         return Array.isArray(dados) ? dados : []
-    } catch (erro) {
+    }
+    catch (erro) {
         console.warn("Não foi possível ler as publicações salvas.", erro)
         return []
     }
@@ -29,7 +22,11 @@ function lerPostsSalvos() {
 // Converte a data salva para "dd/mm/aaaa | hh:mm"
 function formatarDataHora(valor) {
     const data = new Date(valor)
-    if (!valor || isNaN(data.getTime())) return ""
+
+    if (!valor || isNaN(data.getTime())) {
+        return ""
+    }
+
     const dia = data.toLocaleDateString("pt-BR")
     const hora = data.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })
     return `${dia} | ${hora}`
@@ -38,8 +35,15 @@ function formatarDataHora(valor) {
 // Cria um elemento com classe e texto opcionais
 function criarElemento(tag, classe, texto) {
     const elemento = document.createElement(tag)
-    if (classe) elemento.className = classe
-    if (texto !== undefined) elemento.textContent = texto
+    
+    if (classe) {
+        elemento.className = classe
+    }
+
+    if (texto != undefined) {
+        elemento.textContent = texto
+    }
+
     return elemento
 }
 
@@ -48,7 +52,10 @@ function criarElemento(tag, classe, texto) {
 // Desenha no feed as publicações salvas
 function adicionarPostsSalvos() {
     const container = document.getElementById("feedPosts")
-    if (!container) return
+
+    if (!container) {
+        return
+    }
 
     container.querySelectorAll("[data-post-id]").forEach((post) => post.remove())
 
@@ -59,18 +66,10 @@ function adicionarPostsSalvos() {
         artigo.dataset.categoria = post.categoria
         artigo.dataset.status = post.status
         artigo.dataset.cidade = post.cidade
-
-        const imagensCategoria = {
-            lixo: "../img/lixo.png",
-            buraco: "../img/buraco.png",
-            iluminacao: "../img/fatec-jundiai.jpg",
-        }
-        
         const foto = criarElemento("img", "post-photo")
-        foto.src = post.imagem || imagensCategoria[post.categoria] || "../img/fatec-jundiai.jpg"
+        foto.src = post.imagem
         foto.alt = `Foto do local da ocorrência: ${post.titulo}`
         foto.loading = "lazy"
-
         const info = criarElemento("div", "feed-post-info")
         const meta = criarElemento("div", "post-meta")
         meta.append(
@@ -92,7 +91,7 @@ function adicionarPostsSalvos() {
         rodape.append(criarElemento("span", "", dataHora ? `${textoLocal} | ${dataHora}` : textoLocal))
         
         // Só prefeituras veem o botão, e só se o status NÃO for finalizado
-        if (ehPrefeitura() && post.status !== "finalizado") {
+        if (ehPrefeitura() && post.status != "finalizado") {
             const btnStatus = criarElemento("button", "button btn-alterar-status", "Alterar status")
             btnStatus.type = "button"
             rodape.append(btnStatus)
@@ -110,7 +109,9 @@ function filtrarFeed() {
     const container = document.getElementById("feedPosts")
     const filtroCategoria = document.getElementById("feedCategoria")
     const mensagem = document.getElementById("feedSemResultados")
-    if (!container || !filtroCategoria || !mensagem) return
+    if (!container || !filtroCategoria || !mensagem) {
+        return
+    }
 
     const abaAtiva = document.querySelector(".feed-tab.ativa")
     const statusSelecionado = abaAtiva ? abaAtiva.dataset.status : "todas"
@@ -121,22 +122,24 @@ function filtrarFeed() {
 
     posts.forEach((post) => {
         const categoriaCorreta =
-            categoriaSelecionada === "todas" ||
-            post.dataset.categoria === categoriaSelecionada
+            categoriaSelecionada == "todas" ||
+            post.dataset.categoria == categoriaSelecionada
         const statusCorreto =
-            statusSelecionado === "todas" ||
-            post.dataset.status === statusSelecionado
+            statusSelecionado == "todas" ||
+            post.dataset.status == statusSelecionado
         const cidadeCorreta =
             !cidadeUrl ||
-            (post.dataset.cidade || "").toLocaleLowerCase("pt-BR") ===
+            (post.dataset.cidade || "").toLocaleLowerCase("pt-BR") ==
             cidadeUrl.toLocaleLowerCase("pt-BR")
             
         const mostrar = categoriaCorreta && statusCorreto && cidadeCorreta
         post.hidden = !mostrar
-        if (mostrar) encontrados++
+        if (mostrar) {
+            encontrados++
+        }
     })
 
-    mensagem.hidden = encontrados !== 0
+    mensagem.hidden = encontrados != 0
     const subtitulo = document.getElementById("feedSubtitle")
     if (subtitulo) {
         subtitulo.textContent = cidadeUrl
@@ -148,7 +151,7 @@ function filtrarFeed() {
 // Marca a aba de status ativa e reaplica o filtro
 function selecionarStatus(status, botao) {
     document.querySelectorAll(".feed-tab").forEach((aba) => {
-        const selecionada = aba === botao
+        const selecionada = aba == botao
         aba.classList.toggle("ativa", selecionada)
         aba.setAttribute("aria-pressed", String(selecionada))
     })
@@ -160,25 +163,29 @@ function selecionarStatus(status, botao) {
 // Avança o status: não iniciado → iniciado → finalizado
 function alterarStatus(evento) {
     // Só prefeituras podem alterar o status
-    if (!ehPrefeitura()) return
+    if (!ehPrefeitura()) {
+        return
+    }
 
     // A CORREÇÃO ESTÁ AQUI: usar evento.target em vez de currentTarget
     const botao = evento.target 
     const postElemento = botao.closest(".feed-post")
     
-    if (!postElemento) return
+    if (!postElemento) {
+        return
+    }
 
     const statusAtual = postElemento.dataset.status
 
     // Nova regra: Bloqueia a alteração se já estiver finalizado
-    if (statusAtual === "finalizado") {
+    if (statusAtual == "finalizado") {
         return
     }
 
     let novoStatus = ""
-    if (statusAtual === "nao-iniciado") {
+    if (statusAtual == "nao-iniciado") {
         novoStatus = "iniciado"
-    } else if (statusAtual === "iniciado") {
+    } else if (statusAtual == "iniciado") {
         novoStatus = "finalizado"
     }
 
@@ -193,7 +200,7 @@ function alterarStatus(evento) {
     }
 
     // 3. Se o post acabou de ser finalizado, esconde o botão
-    if (novoStatus === "finalizado") {
+    if (novoStatus == "finalizado") {
         botao.style.display = "none"
     }
 
@@ -201,8 +208,8 @@ function alterarStatus(evento) {
     const postId = postElemento.dataset.postId
     if (postId) {
         const posts = lerPostsSalvos()
-        const index = posts.findIndex(p => p.id === postId)
-        if (index !== -1) {
+        const index = posts.findIndex(p => p.id == postId)
+        if (index != -1) {
             posts[index].status = novoStatus
             localStorage.setItem(CHAVE_POSTS, JSON.stringify(posts))
         }
@@ -226,9 +233,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Esconde o botão dos posts estáticos (HTML) que já estão finalizados
         document.querySelectorAll('.feed-post').forEach(post => {
-            if (post.dataset.status === 'finalizado') {
+            if (post.dataset.status == 'finalizado') {
                 const btn = post.querySelector('.btn-alterar-status')
-                if (btn) btn.style.display = 'none'
+                if (btn) {
+                    btn.style.display = 'none'
+                }
             }
         })
 
@@ -239,7 +248,9 @@ document.addEventListener("DOMContentLoaded", () => {
         })
         
         const filtroCategoria = document.getElementById("feedCategoria")
-        if (filtroCategoria) filtroCategoria.addEventListener("change", filtrarFeed)
+        if (filtroCategoria) {
+            filtroCategoria.addEventListener("change", filtrarFeed)
+        }
 
         // Ouvinte de cliques no container do feed
         document.getElementById("feedPosts").addEventListener("click", (evento) => {
@@ -249,7 +260,7 @@ document.addEventListener("DOMContentLoaded", () => {
         })
 
         const params = new URLSearchParams(window.location.search)
-        if (params.get("publicado") === "1") {
+        if (params.get("publicado") == "1") {
             const aviso = criarElemento(
                 "p",
                 "success-banner",

@@ -18,7 +18,8 @@ function lerPostsSalvos() {
     try {
         const dados = JSON.parse(localStorage.getItem(CHAVE_POSTS) || "[]")
         return Array.isArray(dados) ? dados : []
-    } catch (erro) {
+    }
+    catch (erro) {
         console.warn("Não foi possível ler as publicações salvas.", erro)
         return []
     }
@@ -84,11 +85,14 @@ async function salvarPost(evento) {
 
 // Valida a imagem e reduz para até 1400 px em JPEG
 function otimizarImagem(arquivo) {
-    if (!arquivo) return Promise.resolve("")
+    if (!arquivo) {
+        return Promise.resolve("")
+    }
 
     if (!arquivo.type.startsWith("image/")) {
         return Promise.reject(new Error("Selecione um arquivo de imagem válido."))
     }
+
     if (arquivo.size > 10 * 1024 * 1024) {
         return Promise.reject(new Error("A imagem deve ter no máximo 10 MB."))
     }
@@ -128,7 +132,11 @@ function otimizarImagem(arquivo) {
 // Converte a data salva para "dd/mm/aaaa | hh:mm"
 function formatarDataHora(valor) {
     const data = new Date(valor)
-    if (!valor || isNaN(data.getTime())) return ""
+
+    if (!valor || isNaN(data.getTime())) {
+        return ""
+    }
+    
     const dia = data.toLocaleDateString("pt-BR")
     const hora = data.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })
     return `${dia} | ${hora}`
@@ -137,19 +145,28 @@ function formatarDataHora(valor) {
 // Cria um elemento com classe e texto opcionais
 function criarElemento(tag, classe, texto) {
     const elemento = document.createElement(tag)
-    if (classe) elemento.className = classe
-    if (texto !== undefined) elemento.textContent = texto
+
+    if (classe) {
+        elemento.className = classe
+    }
+    
+    if (texto != undefined) {
+        elemento.textContent = texto
+    }
+    
     return elemento
 }
 
 // Desenha no feed as publicações salvas
 function adicionarPostsSalvos() {
     const container = document.getElementById("feedPosts")
-    if (!container) return
+
+    if (!container) {
+        return
+    }
 
     // Limpa somente posts criados pelo usuário antes de renderizá-los de novo.
     container.querySelectorAll("[data-post-id]").forEach((post) => post.remove())
-
     const fragmento = document.createDocumentFragment()
     lerPostsSalvos().forEach((post) => {
         const artigo = criarElemento("article", "feed-post")
@@ -157,17 +174,10 @@ function adicionarPostsSalvos() {
         artigo.dataset.categoria = post.categoria
         artigo.dataset.status = post.status
         artigo.dataset.cidade = post.cidade
-
-        const imagensCategoria = {
-            lixo: "../img/lixo.png",
-            buraco: "../img/buraco.png",
-            iluminacao: "../img/fatec-jundiai.jpg",
-        }
         const foto = criarElemento("img", "post-photo")
-        foto.src = post.imagem || imagensCategoria[post.categoria] || "../img/fatec-jundiai.jpg"
+        foto.src = post.imagem
         foto.alt = `Foto do local da ocorrência: ${post.titulo}`
         foto.loading = "lazy"
-
         const info = criarElemento("div", "feed-post-info")
         const meta = criarElemento("div", "post-meta")
         meta.append(
@@ -180,7 +190,7 @@ function adicionarPostsSalvos() {
                 "span",
                 `feed-status status-${post.status}`,
                 NOMES_STATUS[post.status] || post.status,
-            ),
+            )
         )
         info.append(
             meta,
@@ -204,7 +214,10 @@ function filtrarFeed() {
     const container = document.getElementById("feedPosts")
     const filtroCategoria = document.getElementById("feedCategoria")
     const mensagem = document.getElementById("feedSemResultados")
-    if (!container || !filtroCategoria || !mensagem) return
+
+    if (!container || !filtroCategoria || !mensagem) {
+        return
+    }
 
     const abaAtiva = document.querySelector(".feed-tab.ativa")
     const statusSelecionado = abaAtiva ? abaAtiva.dataset.status : "todas"
@@ -212,25 +225,28 @@ function filtrarFeed() {
     const cidadeUrl = new URLSearchParams(window.location.search).get("cidade")
     const posts = container.querySelectorAll(".feed-post")
     let encontrados = 0
-
     posts.forEach((post) => {
         const categoriaCorreta =
-            categoriaSelecionada === "todas" ||
-            post.dataset.categoria === categoriaSelecionada
+            categoriaSelecionada == "todas" ||
+            post.dataset.categoria == categoriaSelecionada
         const statusCorreto =
-            statusSelecionado === "todas" ||
-            post.dataset.status === statusSelecionado
+            statusSelecionado == "todas" ||
+            post.dataset.status == statusSelecionado
         const cidadeCorreta =
             !cidadeUrl ||
-            (post.dataset.cidade || "").toLocaleLowerCase("pt-BR") ===
+            (post.dataset.cidade || "").toLocaleLowerCase("pt-BR") ==
             cidadeUrl.toLocaleLowerCase("pt-BR")
         const mostrar = categoriaCorreta && statusCorreto && cidadeCorreta
         post.hidden = !mostrar
-        if (mostrar) encontrados++
+
+        if (mostrar) {
+            encontrados++
+        }
     })
 
-    mensagem.hidden = encontrados !== 0
+    mensagem.hidden = encontrados != 0
     const subtitulo = document.getElementById("feedSubtitle")
+
     if (subtitulo) {
         subtitulo.textContent = cidadeUrl
             ? `Acompanhe os problemas de ${cidadeUrl}.`
@@ -241,7 +257,7 @@ function filtrarFeed() {
 // Marca a aba de status ativa e reaplica o filtro
 function selecionarStatus(status, botao) {
     document.querySelectorAll(".feed-tab").forEach((aba) => {
-        const selecionada = aba === botao
+        const selecionada = aba == botao
         aba.classList.toggle("ativa", selecionada)
         aba.setAttribute("aria-pressed", String(selecionada))
     })
@@ -252,28 +268,40 @@ function selecionarStatus(status, botao) {
 document.addEventListener("DOMContentLoaded", () => {
     // --- Bloco 1: dropdown de municípios (opcional; não derruba o resto se falhar) ---
     try {
-        if (typeof carregarMunicipios === "function") carregarMunicipios()
-    } catch (erro) {
+        if (typeof carregarMunicipios == "function") {
+            carregarMunicipios()
+        }
+    }
+    catch (erro) {
         console.warn("Falha ao carregar municípios:", erro)
     }
 
     // --- Bloco 2: formulário de publicação (post.html) ---
     const form = document.getElementById("formPost")
-    if (form) form.addEventListener("submit", salvarPost)
+
+    if (form) {
+        form.addEventListener("submit", salvarPost)
+    }
 
     const campoImagem = document.getElementById("postImagem")
     const previaImagem = document.getElementById("imagemPreview")
     let urlImagemPrevia = null
+
     if (campoImagem && previaImagem) {
         campoImagem.addEventListener("change", () => {
-            if (urlImagemPrevia) URL.revokeObjectURL(urlImagemPrevia)
+            if (urlImagemPrevia) {
+                URL.revokeObjectURL(urlImagemPrevia)
+            }
+
             const arquivo = campoImagem.files[0]
+            
             if (!arquivo) {
                 previaImagem.hidden = true
                 previaImagem.removeAttribute("src")
                 urlImagemPrevia = null
                 return
             }
+            
             urlImagemPrevia = URL.createObjectURL(arquivo)
             previaImagem.src = urlImagemPrevia
             previaImagem.hidden = false
@@ -287,13 +315,17 @@ document.addEventListener("DOMContentLoaded", () => {
         )
     })
     const filtroCategoria = document.getElementById("feedCategoria")
-    if (filtroCategoria) filtroCategoria.addEventListener("change", filtrarFeed)
+
+    if (filtroCategoria) {
+        filtroCategoria.addEventListener("change", filtrarFeed)
+    }
 
     if (document.getElementById("feedPosts")) {
         adicionarPostsSalvos()
         filtrarFeed()
         const params = new URLSearchParams(window.location.search)
-        if (params.get("publicado") === "1") {
+
+        if (params.get("publicado") == "1") {
             const aviso = criarElemento(
                 "p",
                 "success-banner",

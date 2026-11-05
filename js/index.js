@@ -27,7 +27,7 @@ function mascararCnpj(valor) {
 function cpfValido(valor) {
     const d = somenteDigitos(valor)
     
-    if (d.length !== 11 || /^(\d)\1{10}$/.test(d))
+    if (d.length != 11 || /^(\d)\1{10}$/.test(d))
         return false
     
     for (const tamanho of [9, 10]) {
@@ -39,7 +39,7 @@ function cpfValido(valor) {
 
         const digito = ((soma * 10) % 11) % 10
 
-        if (digito !== Number(d[tamanho])) {
+        if (digito != Number(d[tamanho])) {
             return false
         }
     }
@@ -51,7 +51,7 @@ function cpfValido(valor) {
 function cnpjValido(valor) {
     const d = somenteDigitos(valor)
 
-    if (d.length !== 14 || /^(\d)\1{13}$/.test(d)) {
+    if (d.length != 14 || /^(\d)\1{13}$/.test(d)) {
         return false
     }
     
@@ -69,7 +69,7 @@ function cnpjValido(valor) {
         
         const digito = soma % 11 < 2 ? 0 : 11 - (soma % 11)
         
-        if (digito !== Number(d[tamanho])) {
+        if (digito != Number(d[tamanho])) {
             return false
         }
     }
@@ -80,15 +80,15 @@ function cnpjValido(valor) {
 // Alterna entre as abas Entrar e Cadastrar
 function mostrarPainel(nome, moverFoco) {
     abas.forEach((aba) => {
-        const ativa = aba.dataset.painel === nome
+        const ativa = aba.dataset.painel == nome
         aba.setAttribute("aria-selected", String(ativa))
         aba.tabIndex = ativa ? 0 : -1
         if (ativa && moverFoco) aba.focus()
     })
     Object.entries(paineis).forEach(([chave, form]) => {
-        form.hidden = chave !== nome
+        form.hidden = chave != nome
     })
-    history.replaceState(null, "", nome === "cadastrar" ? "#cadastrar" : "#entrar")
+    history.replaceState(null, "", nome == "cadastrar" ? "#cadastrar" : "#entrar")
 }
 
 // Exibe a mensagem de erro e foca o campo com problema
@@ -115,7 +115,7 @@ function atualizarTipoConta() {
     const tipo = formCadastrar.elements.tipo.value
 
     formCadastrar.querySelectorAll("[data-tipo]").forEach((campo) => {
-        const ativo = campo.dataset.tipo === tipo
+        const ativo = campo.dataset.tipo == tipo
         campo.hidden = !ativo
         campo.querySelector("input").disabled = !ativo
     })
@@ -143,7 +143,7 @@ function emailValido(valor, exigirGov = false) {
 abas.forEach((aba, indice) => {
     aba.addEventListener("click", () => mostrarPainel(aba.dataset.painel, false))
     aba.addEventListener("keydown", (evento) => {
-        if (evento.key !== "ArrowLeft" && evento.key !== "ArrowRight")
+        if (evento.key != "ArrowLeft" && evento.key != "ArrowRight")
             return
         
         const proxima = abas[(indice + 1) % abas.length]
@@ -193,7 +193,7 @@ formCadastrar.addEventListener("submit", async (evento) => {
     limparErro(formCadastrar)
 
     // Valida os campos de cada tipo de conta
-    if (tipo === "cidadao") {
+    if (tipo == "cidadao") {
         if (!cpfValido(f.cpf.value)) {
             return mostrarErro(formCadastrar, "Informe um CPF válido.", f.cpf)
         }
@@ -216,7 +216,7 @@ formCadastrar.addEventListener("submit", async (evento) => {
     }
 
     // Prefeituras precisam usar e-mail institucional
-    if (tipo === "prefeitura" && !emailValido(f.email.value.trim(), true)) {
+    if (tipo == "prefeitura" && !emailValido(f.email.value.trim(), true)) {
         return mostrarErro(formCadastrar, "Prefeituras precisam usar um e-mail .gov.br.", f.email)
     }
 
@@ -224,7 +224,7 @@ formCadastrar.addEventListener("submit", async (evento) => {
         return mostrarErro(formCadastrar, "A senha precisa ter pelo menos 8 caracteres.", f.senha)
     }
 
-    if (f.senha.value !== f.confirma.value) {
+    if (f.senha.value != f.confirma.value) {
         return mostrarErro(formCadastrar, "As senhas não são iguais.", f.confirma)
     }
 
@@ -235,10 +235,10 @@ formCadastrar.addEventListener("submit", async (evento) => {
             tipo,
             email: f.email.value,
             senha: f.senha.value,
-            cpf: tipo === "cidadao" ? f.cpf.value : undefined,
-            pseudonimo: tipo === "cidadao" ? f.pseudonimo.value.trim() : undefined,
-            cnpj: tipo === "prefeitura" ? f.cnpj.value : undefined,
-            municipio: tipo === "prefeitura" ? f.municipio.value.trim() : undefined,
+            cpf: tipo == "cidadao" ? f.cpf.value : undefined,
+            pseudonimo: tipo == "cidadao" ? f.pseudonimo.value.trim() : undefined,
+            cnpj: tipo == "prefeitura" ? f.cnpj.value : undefined,
+            municipio: tipo == "prefeitura" ? f.municipio.value.trim() : undefined,
         })
         iniciarSessao(usuario)
         window.location.href = destinoInicial(usuario)
@@ -248,4 +248,4 @@ formCadastrar.addEventListener("submit", async (evento) => {
 })
 
 /* Painel inicial conforme o link (#cadastrar) */
-mostrarPainel(window.location.hash === "#cadastrar" ? "cadastrar" : "entrar", false)
+mostrarPainel(window.location.hash == "#cadastrar" ? "cadastrar" : "entrar", false)
