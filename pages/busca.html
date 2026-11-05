@@ -31,48 +31,20 @@
             </div>
 
             <div class="search-row">
-                <input type="search" id="pesquisa" placeholder="Pesquisar cidade..." aria-label="Pesquisar cidade">
+                <input type="search" id="pesquisa" list="lista-municipios" placeholder="Pesquisar cidade..." aria-label="Pesquisar cidade">
             </div>
 
-            <div id="resultados" class="city-grid">
-                <button class="city-card item" type="button" data-cidade="Jundiaí">
-                    <span class="city-symbol">JD</span>
-
-                    <span>Jundiaí</span>
-
-                    <span class="city-arrow">↗</span>
-                </button>
-
-                <button class="city-card item" type="button" data-cidade="São Paulo">
-                    <span class="city-symbol">SP</span>
-
-                    <span>São Paulo</span>
-
-                    <span class="city-arrow">↗</span>
-                </button>
-
-                <button class="city-card item" type="button" data-cidade="Jarinu">
-                    <span class="city-symbol">JR</span>
-
-                    <span>Jarinu</span>
-
-                    <span class="city-arrow">↗</span>
-                </button>
-
-                <button class="city-card item" type="button" data-cidade="Campo Limpo Paulista">
-                    <span class="city-symbol">CL</span>
-                    
-                    <span>Campo Limpo Paulista</span>
-                    
-                    <span class="city-arrow">↗</span>
-                </button>
-            </div>
+            <div id="resultados" class="city-grid"></div>
 
             <p id="buscaSemResultados" class="empty-state" hidden>Nenhuma cidade encontrada.</p>
         </main>
 
-        <script src="../js/sessao.js" defer></script>
+        <datalist id="lista-municipios"></datalist>
 
         <script src="../js/busca.js" defer></script>
+
+        <script src="../js/municipios.js" defer></script>
+        
+        <script src="../js/sessao.js" defer></script>
     </body>
 </html>
