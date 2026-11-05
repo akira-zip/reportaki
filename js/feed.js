@@ -27,8 +27,8 @@ function formatarDataHora(valor) {
         return ""
     }
 
-    const dia = data.toLocaleDateString("pt-BR")
-    const hora = data.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })
+    const dia = data.toLocaleDateString("pt-br")
+    const hora = data.toLocaleTimeString("pt-br", { hour: "2-digit", minute: "2-digit" })
     return `${dia} | ${hora}`
 }
 
@@ -129,8 +129,8 @@ function filtrarFeed() {
             post.dataset.status == statusSelecionado
         const cidadeCorreta =
             !cidadeUrl ||
-            (post.dataset.cidade || "").toLocaleLowerCase("pt-BR") ==
-            cidadeUrl.toLocaleLowerCase("pt-BR")
+            (post.dataset.cidade || "").toLocaleLowerCase("pt-br") ==
+            cidadeUrl.toLocaleLowerCase("pt-br")
             
         const mostrar = categoriaCorreta && statusCorreto && cidadeCorreta
         post.hidden = !mostrar
