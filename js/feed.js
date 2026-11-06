@@ -135,7 +135,7 @@ function filtrarFeed() {
     posts.forEach((post) => {
         const categoriaCorreta = categoriaSelecionada == "todas" || categoriaSelecionada == post.dataset.categoria
         const statusCorreto = statusSelecionado == "todas" || statusSelecionado == post.dataset.status
-        const cidadeCorreta = !cidadeUrl || cidadeUrl.toLocaleLowerCase("pt-br") == (post.dataset.cidade || "").toLocaleLowerCase("pt-br")
+        const cidadeCorreta = !cidadeUrl || cidadeUrl.toLocaleLowerCase("pt-br") == post.dataset.cidade.toLocaleLowerCase("pt-br")
         const mostrar = categoriaCorreta && statusCorreto && cidadeCorreta
         post.hidden = !mostrar
 
