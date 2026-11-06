@@ -28,6 +28,7 @@ function mostrarCidades() {
     
     MUNICIPIOS.forEach((municipio) => {
         let cartao = document.createElement("button")
+        cartao.type = "button"
         cartao.className = "city-card item"
         cartao.dataset.cidade = municipio
         cartao.innerHTML = `
