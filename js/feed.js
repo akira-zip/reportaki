@@ -135,7 +135,7 @@ function filtrarFeed() {
     posts.forEach((post) => {
         const categoriaCorreta = categoriaSelecionada == "todas" || categoriaSelecionada == post.dataset.categoria
         const statusCorreto = statusSelecionado == "todas" || statusSelecionado == post.dataset.status
-        const cidadeCorreta = !cidadeUrl || (post.dataset.cidade || "").toLocaleLowerCase("pt-br") == cidadeUrl.toLocaleLowerCase("pt-br")
+        const cidadeCorreta = !cidadeUrl || cidadeUrl.toLocaleLowerCase("pt-br") == (post.dataset.cidade || "").toLocaleLowerCase("pt-br")
         const mostrar = categoriaCorreta && statusCorreto && cidadeCorreta
         post.hidden = !mostrar
 
@@ -212,9 +212,11 @@ function alterarStatus(evento) {
 
     // 4. Atualiza no localStorage
     const postId = postElement.dataset.postId
+    
     if (postId) {
         const posts = lerPostsSalvos()
         const index = posts.findIndex(p => p.id == postId)
+
         if (index != -1) {
             posts[index].status = novoStatus
             localStorage.setItem(CHAVE_POSTS, JSON.stringify(posts))
@@ -241,6 +243,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelectorAll('.feed-post').forEach(post => {
             if (post.dataset.status == 'finalizado') {
                 const btn = post.querySelector('.btn-alterar-status')
+
                 if (btn) {
                     btn.style.display = 'none'
                 }
@@ -254,6 +257,7 @@ document.addEventListener("DOMContentLoaded", () => {
         })
         
         const filtroCategoria = document.getElementById("feedCategoria")
+
         if (filtroCategoria) {
             filtroCategoria.addEventListener("change", filtrarFeed)
         }
@@ -266,12 +270,14 @@ document.addEventListener("DOMContentLoaded", () => {
         })
 
         const params = new URLSearchParams(window.location.search)
+
         if (params.get("publicado") == "1") {
             const aviso = criarElemento(
                 "p",
                 "success-banner",
                 "Publicação criada com sucesso! Ela aparece no início do Feed."
             )
+
             document.querySelector(".feed-page").prepend(aviso)
             history.replaceState({}, "", "feed.html" + (params.has("cidade") ? `?cidade=${encodeURIComponent(params.get("cidade"))}` : ""))
         }
