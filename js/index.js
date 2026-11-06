@@ -85,9 +85,11 @@ function mostrarPainel(nome, moverFoco) {
         aba.tabIndex = ativa ? 0 : -1
         if (ativa && moverFoco) aba.focus()
     })
+
     Object.entries(paineis).forEach(([chave, form]) => {
         form.hidden = chave != nome
     })
+
     history.replaceState(null, "", nome == "cadastrar" ? "#cadastrar" : "#entrar")
 }
 
@@ -142,6 +144,7 @@ function emailValido(valor, exigirGov = false) {
 // Troca de aba por clique ou pelas setas do teclado
 abas.forEach((aba, indice) => {
     aba.addEventListener("click", () => mostrarPainel(aba.dataset.painel, false))
+
     aba.addEventListener("keydown", (evento) => {
         if (evento.key != "ArrowLeft" && evento.key != "ArrowRight")
             return
@@ -155,6 +158,7 @@ abas.forEach((aba, indice) => {
 formCadastrar.elements.cpf.addEventListener("input", (e) => {
     e.target.value = mascararCpf(e.target.value)
 })
+
 formCadastrar.elements.cnpj.addEventListener("input", (e) => {
     e.target.value = mascararCnpj(e.target.value)
 })
@@ -172,15 +176,18 @@ formEntrar.addEventListener("submit", async (evento) => {
     if (!emailValido(email.value.trim())) {
         return mostrarErro(formEntrar, "Informe um e-mail válido.", email)
     }
+
     if (!senha.value) {
         return mostrarErro(formEntrar, "Informe sua senha.", senha)
     }
 
     // Confere as credenciais nas contas salvas e abre a sessão
     const usuario = await autenticar(email.value, senha.value)
+
     if (!usuario) {
         return mostrarErro(formEntrar, "E-mail ou senha incorretos.", senha)
     }
+
     iniciarSessao(usuario)
     window.location.href = destinoInicial(usuario)
 })
@@ -197,6 +204,7 @@ formCadastrar.addEventListener("submit", async (evento) => {
         if (!cpfValido(f.cpf.value)) {
             return mostrarErro(formCadastrar, "Informe um CPF válido.", f.cpf)
         }
+
         if (!f.pseudonimo.value.trim()) {
             return mostrarErro(formCadastrar, "Escolha um pseudônimo.", f.pseudonimo)
         }
@@ -240,6 +248,7 @@ formCadastrar.addEventListener("submit", async (evento) => {
             cnpj: tipo == "prefeitura" ? f.cnpj.value : undefined,
             municipio: tipo == "prefeitura" ? f.municipio.value.trim() : undefined,
         })
+        
         iniciarSessao(usuario)
         window.location.href = destinoInicial(usuario)
     } catch (erro) {

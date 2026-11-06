@@ -58,8 +58,8 @@ function adicionarPostsSalvos() {
     }
 
     container.querySelectorAll("[data-post-id]").forEach((post) => post.remove())
-
     const fragmento = document.createDocumentFragment()
+
     lerPostsSalvos().forEach((post) => {
         const artigo = criarElemento("article", "feed-post")
         artigo.dataset.postId = post.id
@@ -72,6 +72,7 @@ function adicionarPostsSalvos() {
         foto.loading = "lazy"
         const info = criarElemento("div", "feed-post-info")
         const meta = criarElemento("div", "post-meta")
+
         meta.append(
             criarElemento("span", `feed-tag tag-${post.categoria}`, NOMES_CATEGORIAS[post.categoria] || post.categoria),
             criarElemento("span", `feed-status status-${post.status}`, NOMES_STATUS[post.status] || post.status)
@@ -101,7 +102,17 @@ function adicionarPostsSalvos() {
         artigo.append(foto, info)
         fragmento.append(artigo)
     })
+    
     container.prepend(fragmento)
+}
+
+// Define a cidade do feed
+function cidadeDoFeed() {
+    if (ehPrefeitura()) {
+        return usuarioAtual().municipio
+    }
+
+    return new URLSearchParams(window.location.search).get("cidade")
 }
 
 // Mostra só os posts que batem com categoria, status e cidade
@@ -109,6 +120,7 @@ function filtrarFeed() {
     const container = document.getElementById("feedPosts")
     const filtroCategoria = document.getElementById("feedCategoria")
     const mensagem = document.getElementById("feedSemResultados")
+    
     if (!container || !filtroCategoria || !mensagem) {
         return
     }
@@ -116,24 +128,17 @@ function filtrarFeed() {
     const abaAtiva = document.querySelector(".feed-tab.ativa")
     const statusSelecionado = abaAtiva ? abaAtiva.dataset.status : "todas"
     const categoriaSelecionada = filtroCategoria.value
-    const cidadeUrl = new URLSearchParams(window.location.search).get("cidade")
+    const cidadeUrl = cidadeDoFeed()
     const posts = container.querySelectorAll(".feed-post")
     let encontrados = 0
 
     posts.forEach((post) => {
-        const categoriaCorreta =
-            categoriaSelecionada == "todas" ||
-            post.dataset.categoria == categoriaSelecionada
-        const statusCorreto =
-            statusSelecionado == "todas" ||
-            post.dataset.status == statusSelecionado
-        const cidadeCorreta =
-            !cidadeUrl ||
-            (post.dataset.cidade || "").toLocaleLowerCase("pt-br") ==
-            cidadeUrl.toLocaleLowerCase("pt-br")
-            
+        const categoriaCorreta = categoriaSelecionada == "todas" || categoriaSelecionada == post.dataset.categoria
+        const statusCorreto = statusSelecionado == "todas" || statusSelecionado == post.dataset.status
+        const cidadeCorreta = !cidadeUrl || cidadeUrl.toLocaleLowerCase("pt-br") == (post.dataset.cidade || "").toLocaleLowerCase("pt-br")
         const mostrar = categoriaCorreta && statusCorreto && cidadeCorreta
         post.hidden = !mostrar
+
         if (mostrar) {
             encontrados++
         }
@@ -141,10 +146,9 @@ function filtrarFeed() {
 
     mensagem.hidden = encontrados != 0
     const subtitulo = document.getElementById("feedSubtitle")
+
     if (subtitulo) {
-        subtitulo.textContent = cidadeUrl
-            ? `Acompanhe os problemas de ${cidadeUrl}.`
-            : "Acompanhe os problemas de Jundiaí e de outras cidades."
+        subtitulo.textContent = cidadeUrl ? `Acompanhe os problemas de ${cidadeUrl}.` : "Acompanhe os problemas das cidades."
     }
 }
 
@@ -155,45 +159,47 @@ function selecionarStatus(status, botao) {
         aba.classList.toggle("ativa", selecionada)
         aba.setAttribute("aria-pressed", String(selecionada))
     })
+
     filtrarFeed()
 }
 
 // --- FUNÇÃO DE ALTERAR STATUS CORRIGIDA ---
 
-// Avança o status: não iniciado → iniciado → finalizado
+// Avança o status: não iniciado -> iniciado -> finalizado
 function alterarStatus(evento) {
     // Só prefeituras podem alterar o status
     if (!ehPrefeitura()) {
         return
     }
 
-    // A CORREÇÃO ESTÁ AQUI: usar evento.target em vez de currentTarget
     const botao = evento.target 
-    const postElemento = botao.closest(".feed-post")
+    const postElement = botao.closest(".feed-post")
     
-    if (!postElemento) {
+    if (!postElement) {
         return
     }
 
-    const statusAtual = postElemento.dataset.status
+    const statusAtual = postElement.dataset.status
 
-    // Nova regra: Bloqueia a alteração se já estiver finalizado
     if (statusAtual == "finalizado") {
         return
     }
 
     let novoStatus = ""
+
     if (statusAtual == "nao-iniciado") {
         novoStatus = "iniciado"
-    } else if (statusAtual == "iniciado") {
+    }
+    else if (statusAtual == "iniciado") {
         novoStatus = "finalizado"
     }
 
     // 1. Atualiza os dados no HTML
-    postElemento.dataset.status = novoStatus
+    postElement.dataset.status = novoStatus
 
     // 2. Atualiza a etiqueta visual
-    const tagStatus = postElemento.querySelector(".feed-status")
+    const tagStatus = postElement.querySelector(".feed-status")
+
     if (tagStatus) {
         tagStatus.className = `feed-status status-${novoStatus}`
         tagStatus.textContent = NOMES_STATUS[novoStatus]
@@ -205,10 +211,12 @@ function alterarStatus(evento) {
     }
 
     // 4. Atualiza no localStorage
-    const postId = postElemento.dataset.postId
+    const postId = postElement.dataset.postId
+    
     if (postId) {
         const posts = lerPostsSalvos()
         const index = posts.findIndex(p => p.id == postId)
+
         if (index != -1) {
             posts[index].status = novoStatus
             localStorage.setItem(CHAVE_POSTS, JSON.stringify(posts))
@@ -235,6 +243,7 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelectorAll('.feed-post').forEach(post => {
             if (post.dataset.status == 'finalizado') {
                 const btn = post.querySelector('.btn-alterar-status')
+
                 if (btn) {
                     btn.style.display = 'none'
                 }
@@ -248,6 +257,7 @@ document.addEventListener("DOMContentLoaded", () => {
         })
         
         const filtroCategoria = document.getElementById("feedCategoria")
+
         if (filtroCategoria) {
             filtroCategoria.addEventListener("change", filtrarFeed)
         }
@@ -260,12 +270,14 @@ document.addEventListener("DOMContentLoaded", () => {
         })
 
         const params = new URLSearchParams(window.location.search)
+
         if (params.get("publicado") == "1") {
             const aviso = criarElemento(
                 "p",
                 "success-banner",
                 "Publicação criada com sucesso! Ela aparece no início do Feed."
             )
+
             document.querySelector(".feed-page").prepend(aviso)
             history.replaceState({}, "", "feed.html" + (params.has("cidade") ? `?cidade=${encodeURIComponent(params.get("cidade"))}` : ""))
         }

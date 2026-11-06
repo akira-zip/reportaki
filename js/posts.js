@@ -168,6 +168,7 @@ function adicionarPostsSalvos() {
     // Limpa somente posts criados pelo usuário antes de renderizá-los de novo.
     container.querySelectorAll("[data-post-id]").forEach((post) => post.remove())
     const fragmento = document.createDocumentFragment()
+
     lerPostsSalvos().forEach((post) => {
         const artigo = criarElemento("article", "feed-post")
         artigo.dataset.postId = post.id
@@ -180,16 +181,15 @@ function adicionarPostsSalvos() {
         foto.loading = "lazy"
         const info = criarElemento("div", "feed-post-info")
         const meta = criarElemento("div", "post-meta")
+
         meta.append(
             criarElemento(
                 "span",
-                `feed-tag tag-${post.categoria}`,
-                NOMES_CATEGORIAS[post.categoria] || post.categoria,
+                `feed-tag tag-${post.categoria}`, NOMES_CATEGORIAS[post.categoria] || post.categoria,
             ),
             criarElemento(
                 "span",
-                `feed-status status-${post.status}`,
-                NOMES_STATUS[post.status] || post.status,
+                `feed-status status-${post.status}`, NOMES_STATUS[post.status] || post.status,
             )
         )
         info.append(
@@ -197,6 +197,7 @@ function adicionarPostsSalvos() {
             criarElemento("h2", "", post.titulo),
             criarElemento("p", "", post.descricao),
         )
+
         const rodape = criarElemento("div", "post-footer")
         const enderecoCompleto = [post.cidade, post.endereco].filter(Boolean).join(", ")
         const dataHora = formatarDataHora(post.data)
@@ -206,6 +207,7 @@ function adicionarPostsSalvos() {
         artigo.append(foto, info)
         fragmento.append(artigo)
     })
+    
     container.prepend(fragmento)
 }
 
